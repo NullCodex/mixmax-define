@@ -1,6 +1,5 @@
 server.crt
 server.csr
 server.enc.key
-server.js
 server.key
 node_modules
