@@ -6,5 +6,5 @@ To add `mixmax-define` to your Mixmax configuration, find the 'Integrations' sec
 * **Name:** `Define a word`
 * **Command:** `define`
 * **Parameter placeholder:** `[word]`
-* **Command Parameter Suggestions API URL:** ~~`https://warm-hamlet-7436.herokuapp.com/searchTracks`~~ _no longer available_
-* **Command Parameter Resolver API URL:** ~~`https://warm-hamlet-7436.herokuapp.com/resolveTrack`~~ _no longer available_
+* **Command Parameter Suggestions API URL:** ~~`https://mixmax.herokuapp.com/definetypeahead`
+* **Command Parameter Resolver API URL:** ~~`https://mixmax.herokuapp.com/defineresolver`
