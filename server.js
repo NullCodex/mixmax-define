@@ -12,7 +12,7 @@ app.use(function(req, res, next) {
 });
 
 function wordDefintion(word, callback) {
-    var apiUrl = 'https://montanaflynn-dictionary.p.mashape.com/define?word=' + term;
+    var apiUrl = 'https://montanaflynn-dictionary.p.mashape.com/define?word=' + word;
     request({
         url: apiUrl,
         headers: {
