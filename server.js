@@ -2,13 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var sync = require('synchronize');
 var cors = require('cors');
-var https = require('https');
-var fs = require('fs');
-
-var options = {
-   key  : fs.readFileSync('server.key'),
-   cert : fs.readFileSync('server.crt')
-};
+var port = process.env.PORT || 9145;
 
 var app = express();
 // Use fibers in all routes so we can use sync.await() to make async code easier to work with.
@@ -25,7 +19,4 @@ var corsOptions = {
 app.get('/definetypeahead', cors(corsOptions), require('./api/defineTypeahead'));
 app.get('/defineresolver', cors(corsOptions), require('./api/defineResolver'));
 
-https.createServer(options, app).listen(process.env.PORT || 9145, function () {
-   console.log('Started!');
-});
-
+app.listen(port);
