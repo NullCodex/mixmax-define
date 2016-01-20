@@ -1,3 +1,5 @@
+require('newrelic');
+
 var express = require('express');
 var app = express();
 var request = require('request');
@@ -22,6 +24,11 @@ function wordDefintion(word, callback) {
         timeout: 10 * 1000
     }, callback);
 }
+
+// Route to check availability for new relic
+app.get('/', function(req, res) {
+    return res.sendStatus(204);
+});
 
 app.get('/definetypeahead', function(req, res) {
     var term = req.query.text.trim();
