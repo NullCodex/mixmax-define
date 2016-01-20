@@ -16,7 +16,7 @@ var corsOptions = {
   credentials: true
 };
 
-app.get('/definetypeahead', cors(corsOptions), require('./api/defineTypeahead'));
-app.get('/defineresolver', cors(corsOptions), require('./api/defineResolver'));
+app.get('/definetypeahead', cors(corsOptions), require('./api/DefineTypeahead'));
+app.get('/defineresolver', cors(corsOptions), require('./api/DefineResolver'));
 
 app.listen(port);
