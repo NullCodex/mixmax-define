@@ -1,22 +1,92 @@
 var express = require('express');
-var bodyParser = require('body-parser');
-var sync = require('synchronize');
-var cors = require('cors');
-var port = process.env.PORT || 9145;
-
 var app = express();
-// Use fibers in all routes so we can use sync.await() to make async code easier to work with.
-app.use(function(req, res, next) {
-  sync.fiber(next);
+var request = require('request');
+var port = process.env.PORT || 9000;
+
+// enable CORS
+app.use(function (req, res, next) {
+    res.header('Access-Control-Allow-Origin', 'https://compose.mixmax.com');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+    res.header('Access-Control-Allow-Credentials', 'true');
+
+    next();
 });
 
-// Since Mixmax calls this API directly from the client-side, it must be whitelisted.
-var corsOptions = {
-  origin: /^[^.\s]+\.mixmax\.com$/,
-  credentials: true
-};
+app.get('/definetypeahead', function(req, res) {
+    var term = req.query.text.trim();
+    if (!term) {
+        res.json([{
+            title: '<i>(enter a search term)</i>',
+            text: ''
+        }]);
+        return;
+    }
 
-app.get('/definetypeahead', cors(corsOptions), require('./api/DefineTypeahead'));
-app.get('/defineresolver', cors(corsOptions), require('./api/DefineResolver'));
+    var response;
+    try {
+        response = sync.await(request({
+            url: 'https://montanaflynn-dictionary.p.mashape.com/define?word=' + term,
+            headers: {
+                'X-Mashape-Key': 'ICs9hz1mdMmshBp7lePPo5ehopQgp1zjmgJjsnbzXVNzkGuJWe'
+            },
+            json: true,
+            timeout: 10 * 1000
+        }, sync.defer()));
+    } catch (e) {
+        res.status(500).send('Error');
+        return;
+    }
+
+    if (response.statusCode !== 200 || !response.body) {
+        res.status(500).send('Error');
+        return;
+    }
+
+    var definition = response.body.definitions;
+    var results;
+    if (definition.length === 0) {
+        results = [{
+            title: '<i>(no results)</i>',
+            text: ''
+        }]
+
+    } else {
+        results = [{
+            title: '<i>' + definition[0].text + '<i>',
+            text: ''
+        }]
+    }
+    res.json(results);
+});
+
+app.get('/defineresolver', function(req, res) {
+    var term = req.query.text.trim();
+    var response;
+    try {
+        response = sync.await(request({
+            url: 'https://montanaflynn-dictionary.p.mashape.com/define?word=' + term,
+            headers: {
+                'X-Mashape-Key': 'ICs9hz1mdMmshBp7lePPo5ehopQgp1zjmgJjsnbzXVNzkGuJWe'
+            },
+            json: true,
+            timeout: 10 * 1000
+        }, sync.defer()));
+    } catch (e) {
+        res.status(500).send('Error');
+        return;
+    }
+
+    var definition = response.body.definitions;
+    var html;
+    if (definition.length === 0) {
+      html = '<i> No results </i>';
+
+    } else {
+      html = '<i>' + definition[0].text + '</i>';
+    }
+    res.json({
+        body: html
+    });
+});
 
 app.listen(port);
